@@ -49,7 +49,7 @@ class PostController extends Controller
 
         // Upload image
         $image = $request->file('image');
-        $image->storeAS('public/posts', $image->hashName());
+        $image->storeAs('public/posts', $image->hashName());
 
         // create post
         $post = Post::create([
@@ -71,7 +71,7 @@ class PostController extends Controller
     public function show($id)
     {
         // find post by ID
-        $post = Post::find($id);
+        $post = Post::findOrFail($id);
 
         // return single post as a resource
         return new PostResource(true, 'Detail Data Post!', $post);
@@ -88,6 +88,7 @@ class PostController extends Controller
     {
         //define validation rules
         $validator = Validator::make($request->all(), [
+            'image'     => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'title'     => 'required',
             'content'   => 'required',
         ]);
@@ -98,14 +99,14 @@ class PostController extends Controller
         }
 
         //find post by ID
-        $post = Post::find($id);
+        $post = Post::findOrFail($id);
 
         //check if image is not empty
         if ($request->hasFile('image')) {
 
             //upload image
             $image = $request->file('image');
-            $image->storeAS('public/posts', $image->hashName());
+            $image->storeAs('public/posts', $image->hashName());
 
             //delete old image
             Storage::delete('public/posts/'.basename($post->image));
@@ -141,7 +142,7 @@ class PostController extends Controller
     {
 
         //find post by ID
-        $post = Post::find($id);
+        $post = Post::findOrFail($id);
 
         //delete image
         Storage::delete('public/posts/'.basename($post->image));
